@@ -1,0 +1,64 @@
+name: dbt CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  dbt-test:
+    runs-on: ubuntu-latest
+    name: Run dbt build & test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dbt + DuckDB adapter
+        run: |
+          pip install dbt-duckdb dbt-utils
+
+      - name: Install dbt packages
+        run: dbt deps
+        working-directory: .
+
+      - name: Download Olist dataset (cached)
+        uses: actions/cache@v4
+        id: cache-data
+        with:
+          path: data/
+          key: olist-dataset-v1
+
+      - name: Download data if not cached
+        if: steps.cache-data.outputs.cache-hit != 'true'
+        run: |
+          pip install kaggle
+          kaggle datasets download -d olistbr/brazilian-ecommerce -p data/ --unzip
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+
+      - name: Load CSV seeds into DuckDB
+        run: python scripts/load_data.py
+
+      - name: dbt build (compile + run + test)
+        run: dbt build --profiles-dir .
+        env:
+          DBT_PROFILES_DIR: .
+
+      - name: Generate dbt docs
+        run: dbt docs generate --profiles-dir .
+
+      - name: Upload dbt docs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-docs
+          path: target/
+          retention-days: 7
