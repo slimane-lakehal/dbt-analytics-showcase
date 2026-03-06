@@ -1,0 +1,29 @@
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# DuckDB databases
+*.duckdb
+*.duckdb.wal
+
+# Data files (too large for git)
+data/*.csv
+data/*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+dbt_internal_packages/
