@@ -1,0 +1,13 @@
+[project]
+name = "dbt-analytics-showcase"
+version = "0.1.0"
+description = "dbt analytics showcase using DuckDB and the Olist Brazilian e-commerce dataset"
+requires-python = ">=3.11"
+dependencies = [
+    "dbt-core>=1.9",
+    "dbt-duckdb>=1.9",
+    "kaggle>=1.6",
+]
+
+[tool.uv]
+package = false

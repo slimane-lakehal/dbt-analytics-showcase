@@ -16,34 +16,32 @@ help:
 	@echo ""
 
 setup:
-	@echo "Creating a virtual environment and installing dependencies..."
-	python -m venv .venv
-	.venv/bin/pip install --upgrade pip
-	.venv/bin/pip install dbt-core dbt-duckdb
-	.venv/bin/dbt deps
+	@echo "Installing dependencies with uv..."
+	uv sync
+	uv run dbt deps
 	@echo "Setup complete"
 
 
 load:
 	@echo "Loading data into DuckDB..."
-	.venv/bin/python scripts/load_data.py
+	uv run python scripts/load_data.py
 
 build:
 	@echo "Running dbt models..."
-	.venv/bin/dbt run --profiles-dir .
+	uv run dbt run --profiles-dir .
 
 test:
 	@echo "Running dbt tests..."
-	.venv/bin/dbt test --profiles-dir .
+	uv run dbt test --profiles-dir .
 
 docs:
 	@echo "Generating dbt docs..."
-	.venv/bin/dbt docs generate --profiles-dir .
-	.venv/bin/dbt docs serve --profiles-dir . --port 8080
+	uv run dbt docs generate --profiles-dir .
+	uv run dbt docs serve --profiles-dir . --port 8080
 
 clean:
 	@echo "Cleaning..."
-	.venv/bin/dbt clean
+	uv run dbt clean
 	rm -f dev.duckdb
 
 # Full pipeline in one shot
