@@ -1,0 +1,6 @@
+*.sql linguist-detectable=true
+
+Makefile linguist-detectable=false
+
+*.yml linguist-detectable=false
+*.yaml linguist-detectable=false
